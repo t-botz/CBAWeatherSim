@@ -2,7 +2,7 @@ package com.tibodelor.interview.cba.weathersimultator
 
 import java.time.{Duration, Instant}
 
-import com.tibodelor.interview.cba.weathersimultator.weatherevents.{GlobalWarming, WeatherEvent}
+import com.tibodelor.interview.cba.weathersimultator.weatherevents.{GlobalWarming, Pollution, SeasonEffect, WeatherEvent}
 
 import scala.collection.GenSeq
 import scala.util.Random
@@ -49,6 +49,7 @@ object Generator {
   }
 
   private[weathersimultator] def generateEvents(planet: Planet): GenSeq[WeatherEvent] = List(
-    GlobalWarming(1.2d)
-  )
+    GlobalWarming(1.2d),
+    SeasonEffect()
+  ) :+ Pollution(planet.cities.zip(Stream.continually(Random.nextInt(100)).take(10)).toMap)
 }
