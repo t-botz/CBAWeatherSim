@@ -24,7 +24,7 @@ object Generator {
       .map(City(generateName(), _))
   }
 
-  private[weathersimultator] def generateName(): String = Random.alphanumeric.take(Random.nextInt(20) + 5).mkString
+  private[weathersimultator] def generateName(): String = Random.alphanumeric.take(10).mkString
 
   private[weathersimultator] def generateStations(maxCoordinate: Int): scala.List[WeatherStation] =
     (for {
