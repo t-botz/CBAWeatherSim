@@ -1,8 +1,7 @@
 package com.tibodelor.interview.cba.weathersimultator
 
-import java.time.Instant
+import java.time.{Duration, Instant}
 
-import com.tibodelor.interview.cba.weathersimultator.Generator.generateGaussian
 import com.tibodelor.interview.cba.weathersimultator.weatherevents.WeatherEvent
 
 import scala.collection.GenSeq
@@ -16,9 +15,6 @@ object Generator {
     val cities = generateCities(nbCity, stations)
     Planet("Zorg", planetSize, cities, stations)
   }
-
-  def generateWeatherSnapshot(planet: Planet, startDate: Instant): WeatherSnapshot =
-    WeatherSnapshot(planet, startDate, generateEvents(planet), generateMeasurements(planet))
 
   private def generateCities(nbCity: Int, existingStations: List[WeatherStation]): List[City] = {
     Random
@@ -36,16 +32,20 @@ object Generator {
       j <- 0 to maxCoordinate
     } yield WeatherStation(Coordinates(i, j, generateAltitude()))).toList
 
-
   private def generateAltitude() = generateGaussian(0, 10000).toInt
 
-  private def generateGaussian(mean: Double, deviation: Double):Double = Random.nextGaussian() * deviation + mean
+  def generateWeatherSnapshot(planet: Planet, startDate: Instant): WeatherSnapshot = {
+    val trainingPeriod = Duration.ofDays(10)
+    WeatherSnapshot(planet, startDate.minus(trainingPeriod), generateEvents(planet), generateMeasurements(planet)).forecast(startDate)
+  }
 
-  private def generateMeasurements(planet: Planet): GenSeq[WeatherMeasurement] = planet.stations.map(WeatherMeasurement(_, generateGaussian(20, 20).toFloat, generateGaussian(1500, 200).toFloat, generateHumidity()))
+  private def generateMeasurements(planet: Planet): GenSeq[WeatherMeasurement] = planet.stations.map(WeatherMeasurement(_, generateGaussian(15, 15).toFloat, generateGaussian(1500, 200).toFloat, generateHumidity()))
+
+  private def generateGaussian(mean: Double, deviation: Double): Double = Random.nextGaussian() * deviation + mean
 
   private def generateHumidity() = {
     val humidity = generateGaussian(50, 50).toInt
-    if(humidity > 100) 100 else if(humidity < 0) 0 else humidity
+    if (humidity > 100) 100 else if (humidity < 0) 0 else humidity
   }
 
   private def generateEvents(planet: Planet): GenSeq[WeatherEvent] = Seq.empty
