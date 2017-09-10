@@ -2,7 +2,7 @@ package com.tibodelor.interview.cba.weathersimultator
 
 import java.time._
 
-case class WeatherAppArgs(nbIterations: Int = 10, gap: Duration = Duration.parse("P1D"), nbCities: Int = 10)
+case class WeatherAppArgs(nbIterations: Int = 10, gap: Duration = Duration.parse("P1D" ), nbCities: Int = 10)
 
 object WeatherSimulator {
 
@@ -10,11 +10,8 @@ object WeatherSimulator {
     val parser = new scopt.OptionParser[WeatherAppArgs]("sbt run") {
       head("weather_simu", "0.1")
       note("Simulate the weather on Planet Zorgs")
-      opt[Unit]('h', "help")
-        .action((_, c) => {
-          showUsage()
-          c
-        })
+
+      help("help").text("prints this usage text")
 
       opt[Int]('n', "nbIterations")
         .valueName("<nbIterations>")
@@ -43,8 +40,20 @@ object WeatherSimulator {
     }
 
     parser.parse(args, WeatherAppArgs()) match {
-      case Some(config) => println(config)
+      case Some(config) => runSimulator(config)
       case None => // arguments are bad, error message will have been displayed
+    }
+  }
+
+  private def runSimulator(config: WeatherAppArgs) = {
+    val formatter = new ReportFormatter()
+    val planet = Generator.generatePlanet(100, config.nbCities)
+    (0 to config.nbIterations).foldLeft(Generator.generateWeatherSnapshot(planet, Instant.now())) {
+      (status, _) => {
+        formatter.format(status).foreach(println)
+        println
+        status.forecast(status.date.plus(config.gap))
+      }
     }
   }
 }
