@@ -3,7 +3,7 @@ package com.tibodelor.interview.cba.weathersimultator
 import java.time.temporal.ChronoUnit
 import java.time.{Duration, Instant}
 
-import com.tibodelor.interview.cba.weathersimultator.weatherevents.WeatherEvent
+import com.tibodelor.interview.cba.weathersimultator.weatherevents.{GlobalWarming, WeatherEvent}
 import org.scalactic.TolerantNumerics
 import org.scalatest.FunSuite
 
@@ -22,17 +22,7 @@ class WeatherSnaphotTest extends FunSuite {
   }
 
   test("Weather Snapshot should change according to simple event") {
-    val globalWarming = new WeatherEvent {
-      val temperatureRisePerSec: Double = 1d / (60 * 60 * 24 * 365) // 1 degres per year
-      override def doesImpactArea(coordinates: Coordinates): Boolean = true
-
-      override def evolve(duration: Duration): List[WeatherEvent] = List(this)
-
-      override def reflectImpactOnMeasurement(measurement: WeatherMeasurement, duration: Duration): WeatherMeasurement = {
-        measurement.copy(temperature = (measurement.temperature + duration.getSeconds * temperatureRisePerSec).toFloat)
-      }
-    }
-
+    val globalWarming = new GlobalWarming(1d)
 
     val planet = Generator.generatePlanet(10, 2)
     val now = Instant.now()
