@@ -24,8 +24,6 @@ case class WeatherSnapshot(planet: Planet, date: Instant, events: GenSeq[Weather
     */
   def forecast(forecastTime: Instant): WeatherSnapshot = {
 
-    val duration = Duration.between(date, forecastTime)
-
     val newMeasurments =
       measurements
         .par
@@ -35,10 +33,10 @@ case class WeatherSnapshot(planet: Planet, date: Instant, events: GenSeq[Weather
             .filter(e => e.doesImpactArea(m.source.coordinates)))
         )
         .map { case (m, eventsMatching) =>
-          eventsMatching.foldLeft(m) { (measurement, event) => event.reflectImpactOnMeasurement(measurement, duration) }
+          eventsMatching.foldLeft(m) { (measurement, event) => event.reflectImpactOnMeasurement(measurement, date, forecastTime) }
         }
 
-    val newEvents = events.par.flatMap(_.evolve(duration))
+    val newEvents = events.par.flatMap(_.evolve(date, forecastTime))
 
     WeatherSnapshot(planet, forecastTime, newEvents, newMeasurments)
   }

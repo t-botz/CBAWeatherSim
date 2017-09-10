@@ -1,6 +1,6 @@
 package com.tibodelor.interview.cba.weathersimultator.weatherevents
 
-import java.time.Duration
+import java.time.{Duration, Instant}
 
 import com.tibodelor.interview.cba.weathersimultator.{Coordinates, WeatherMeasurement}
 
@@ -20,18 +20,20 @@ trait WeatherEvent {
   /**
     * Apply events to area concerned
     * @param measurement measurement before the event
-    * @param duration Ellapsed time since the evolution of the event
+    * @param currentDate Date of the initial state
+    * @param forecastDate Date to forecast to
     * @return New measurement
     */
-  def reflectImpactOnMeasurement(measurement: WeatherMeasurement, duration: Duration): WeatherMeasurement
+  def reflectImpactOnMeasurement(measurement: WeatherMeasurement, currentDate: Instant, forecastDate: Instant): WeatherMeasurement
 
 
 
   /**
     * Evolve the event
-    * @param duration Ellapsed time since the evolution of the event
+    * @param currentDate Date of the initial state
+    * @param forecastDate Date to forecast to
     * @return List of events resulting of the evolution
     */
-  def evolve(duration: Duration): List[WeatherEvent]
+  def evolve(currentDate: Instant, forecastDate: Instant): List[WeatherEvent]
 
 }

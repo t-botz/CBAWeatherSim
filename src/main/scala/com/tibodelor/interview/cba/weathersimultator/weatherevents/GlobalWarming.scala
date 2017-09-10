@@ -1,6 +1,6 @@
 package com.tibodelor.interview.cba.weathersimultator.weatherevents
 
-import java.time.Duration
+import java.time.{Duration, Instant}
 
 import com.tibodelor.interview.cba.weathersimultator.{Coordinates, WeatherMeasurement}
 
@@ -9,9 +9,10 @@ case class GlobalWarming(temperatureRisePerYear: Double) extends WeatherEvent {
 
   override def doesImpactArea(coordinates: Coordinates): Boolean = true
 
-  override def evolve(duration: Duration): List[WeatherEvent] = List(this)
+  override def evolve(currentDate: Instant, forecastDate: Instant): List[WeatherEvent] = List(this)
 
-  override def reflectImpactOnMeasurement(measurement: WeatherMeasurement, duration: Duration): WeatherMeasurement = {
+  override def reflectImpactOnMeasurement(measurement: WeatherMeasurement, currentDate: Instant, forecastDate: Instant): WeatherMeasurement = {
+    val duration = Duration.between(currentDate, forecastDate)
     measurement.copy(temperature = (measurement.temperature + duration.getSeconds * temperatureRisePerSec).toFloat)
   }
 }
