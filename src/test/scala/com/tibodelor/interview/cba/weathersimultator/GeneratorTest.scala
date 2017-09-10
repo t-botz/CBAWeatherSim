@@ -7,8 +7,11 @@ class GeneratorTest extends FunSuite{
   test("Generator should generate coherent Planet"){
     val planet = Generator.generatePlanet(10,3)
 
+    //(1) Some tests rely on randomness things, I have marked them with (1).
+    // That can lead to flaky test. For a big prod codebase I would either make them more flexibe so they are not flaky or remove them
+
     assert(planet.cities.size == 3)
-    assert(planet.size == 10)
+    assert(planet.size == 10) //(1)
     assert(planet.stations.size == 121) // Each latitude, longitude pair has its station (from 0 to 10)
 
     // I can find back the station for all cities
@@ -22,7 +25,12 @@ class GeneratorTest extends FunSuite{
       assert(c.longitude <= 10)
     }
 
-    //altitude could be validated this way, but still flaky because of randomness
-    //assert(planet.stations.count(s => s.coordinates.altitude < 10000 && s.coordinates.altitude > -10000) > 70)
+    assert(planet.stations.count(s => s.coordinates.altitude < 10000 && s.coordinates.altitude > -10000) > 70)  //(1)
+  }
+
+  test("Generator dont fail when asking too many cities"){
+    val planet = Generator.generatePlanet(10,300)
+    assert(planet.cities.size <= 121)
+    assert(planet.cities.size >= 0)
   }
 }
