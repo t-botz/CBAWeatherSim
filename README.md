@@ -18,7 +18,7 @@ I have implemented each change of weather as a weather events. Evolution is repr
 Potentially any new effect can be implement by implementing a WeatherEvent (Like a volcano, the effect of the wind, ...)
 I have implemented 3 of them : Global Warming, Seasons and Pollution
 
-##How to run
+## How to run
 `sbt  run` FTW!
 
 More options can be found when you run `sbt run --help`:
